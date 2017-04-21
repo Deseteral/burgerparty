@@ -18,4 +18,10 @@ public class ProductService {
     public Iterable<Product> getAll() {
         return repository.findAll();
     }
+
+    public Product add(Product product) {
+        return repository.save(
+            Product.builder(product).build()
+        );
+    }
 }

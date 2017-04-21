@@ -13,6 +13,23 @@ public class Product {
     private final String unit;
     private final String imageUrl;
 
+    @JsonCreator
+    Product(
+        @JsonProperty("id") String id,
+        @JsonProperty("name") String name,
+        @JsonProperty("energy") Integer energy,
+        @JsonProperty("price") Double price,
+        @JsonProperty("unit") String unit,
+        @JsonProperty("image") String imageUrl
+    ) {
+        this.id = id;
+        this.name = name;
+        this.energy = energy;
+        this.price = price;
+        this.unit = unit;
+        this.imageUrl = imageUrl;
+    }
+
     public String getId() {
         return id;
     }
@@ -37,21 +54,8 @@ public class Product {
         return imageUrl;
     }
 
-    @JsonCreator
-    Product(
-        @JsonProperty("id") String id,
-        @JsonProperty("name") String name,
-        @JsonProperty("energy") Integer energy,
-        @JsonProperty("price") Double price,
-        @JsonProperty("unit") String unit,
-        @JsonProperty("image") String imageUrl
-    ) {
-        this.id = id;
-        this.name = name;
-        this.energy = energy;
-        this.price = price;
-        this.unit = unit;
-        this.imageUrl = imageUrl;
+    public static Builder builder(Product product) {
+        return new Builder(product);
     }
 
     public static final class Builder {
