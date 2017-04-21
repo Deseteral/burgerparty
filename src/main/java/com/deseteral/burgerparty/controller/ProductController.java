@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.accepted;
 import static org.springframework.http.ResponseEntity.created;
 
 @RestController
@@ -34,5 +35,15 @@ public class ProductController {
         return created(
             URI.create("/products" + createdProduct.getId())
         ).body(createdProduct);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity update(@PathVariable(value = "id") String id,
+                                 @Valid @RequestBody Product product) {
+        Product updatedProduct = service.update(
+            Product.builder(product).withId(id).build()
+        );
+
+        return accepted().body(updatedProduct);
     }
 }

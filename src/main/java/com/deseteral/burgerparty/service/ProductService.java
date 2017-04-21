@@ -1,5 +1,6 @@
 package com.deseteral.burgerparty.service;
 
+import com.deseteral.burgerparty.KeyNotFoundException;
 import com.deseteral.burgerparty.domain.Product;
 import com.deseteral.burgerparty.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,16 @@ public class ProductService {
     }
 
     public Product add(Product product) {
+        return repository.save(
+            Product.builder(product).build()
+        );
+    }
+
+    public Product update(Product product) {
+        if (repository.findOne(product.getId()) == null) {
+            throw new KeyNotFoundException("Key not found");
+        }
+
         return repository.save(
             Product.builder(product).build()
         );

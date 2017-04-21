@@ -75,6 +75,11 @@ public class Product {
             this.imageUrl = product.getImageUrl();
         }
 
+        public Builder withId(String id) {
+            this.id = id;
+            return this;
+        }
+
         public Product build() {
             return new Product(id, name, energy, price, unit, imageUrl);
         }
