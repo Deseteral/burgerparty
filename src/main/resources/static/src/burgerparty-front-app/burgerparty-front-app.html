@@ -1,0 +1,328 @@
+<!doctype html>
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<dom-module id="burgerparty-front-app">
+  <template>
+    <style>
+    :host {
+      @apply(--paper-font-common-base);
+      display: block;
+
+      --main-color: #ffca28;
+      --accent-color: #d50000;
+      --font-color: #000000;
+      --font-color-acc: #ffffff;
+    }
+
+    app-header {
+      background-color: var(--main-color);
+      color: var(--font-color);
+    }
+
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
+    }
+
+    paper-button.primary {
+      margin: 0;
+      background: var(--accent-color);
+      color: var(--font-color-acc);
+    }
+
+    .content-pages {
+      display: flex;
+      justify-content: center;
+    }
+
+    .content-page {
+      max-width: 960px;
+      width: 100%;
+      padding: 48px;
+    }
+
+    .title {
+      font-size: 56px;
+      opacity: 0.87;
+      font-weight: 100;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      margin: 0;
+      opacity: 0.87;
+      font-weight: 400;
+      margin-bottom: 24px;
+    }
+
+    .product-list-element {
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 96px;
+      margin-left: -48px;
+      margin-right: -48px;
+    }
+
+    .product-list-element iron-image {
+      width: 96px;
+      height: 96px;
+      margin-right: 16px;
+      margin-left: 16px;
+    }
+
+    .product-list-element-title {
+      font-size: 24px;
+    }
+
+    .product-list-element-text {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-list-element-info-container {
+      display: flex;
+    }
+
+    .product-list-element-info {
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .product-list-element paper-ripple {
+      color: var(--accent-color);
+    }
+
+    .edit-product-input-group {
+      margin-bottom: 16px;
+    }
+
+    .edit-product-image-container iron-image{
+      width: 128px;
+      height: 128px;
+    }
+
+    .edit-product-three-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media(min-width: 500px) {
+      .edit-product-three-group {
+        flex-direction: row;
+      }
+
+      .edit-product-three-group :nth-child(2) {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+    }
+
+    .edit-product-three-group paper-input {
+      flex: 1;
+    }
+
+    .edit-product-button-group {
+      float: right;
+    }
+
+    .category-listing {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 48px 0;
+    }
+
+    .category-listing-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 256px;
+      min-width: 256px;
+      height: 48px;
+      margin: 8px;
+      background: #fff;
+    }
+    </style>
+    <app-drawer-layout force-narrow>
+
+      <app-drawer id="drawer">
+        <paper-menu id="drawer-menu" selected="{{menuSelection}}">
+          <paper-icon-item>
+            <iron-icon icon="home" item-icon></iron-icon>
+            Strona główna
+          </paper-icon-item>
+          <paper-icon-item>
+            <iron-icon icon="shopping-basket" item-icon></iron-icon>
+            Produkty
+          </paper-icon-item>
+          <paper-icon-item>
+            <iron-icon icon="receipt" item-icon></iron-icon>
+            Przepisy
+          </paper-icon-item>
+        </paper-menu>
+      </app-drawer>
+
+      <app-header-layout>
+
+        <app-header reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
+            <div main-title>Burger Party</div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages class="content-pages" selected="{{menuSelection}}">
+          <paper-card class="content-page">
+            <h1 class="title">Na co masz dziś ochotę?</h1>
+            <h2 class="subtitle">Wybierz i przygotuj coś spośród swoich [[recipes.length]] przepisów!</h2>
+            <paper-button class="primary">losowy przepis</paper-button>
+          </paper-card>
+          <paper-card class="content-page">
+            <h1 class="subtitle">Produkty</h1>
+            <template is="dom-repeat" items="{{products}}">
+              <div class="product-list-element" on-click="selectProduct">
+                <iron-image src="{{item.image}}" sizing="contain" fade></iron-image>
+                <div class="product-list-element-text">
+                  <div class="product-list-element-title">{{item.name}}</div>
+                  <div class="product-list-element-info-container">
+                    <div class="product-list-element-info">
+                      <span>Energia: </span>
+                      <span>{{item.energy}}kcal</span>
+                    </div>
+                    <div class="product-list-element-info">
+                      <span>Cena: </span>
+                      <span>{{formatPrice(item.price)}}</span>
+                    </div>
+                    <div class="product-list-element-info">
+                      <span>Jednostka: </span>
+                      <span>{{item.unit}}</span>
+                    </div>
+                  </div>
+                </div>
+                <paper-ripple></paper-ripple>
+              </div>
+            </template>
+          </paper-card>
+          <div class="content-page category-listing">
+            <template is="dom-repeat" items="{{categories}}">
+              <paper-button class="category-listing-item" raised>{{item.name}}</paper-button>
+            </template>
+          </div>
+          <paper-card class="content-page">
+            <h1 class="subtitle">Edytuj produkt</h1>
+            <div class="edit-product-image-container">
+              <iron-image src="{{selectedProduct.image}}" sizing="contain" fade></iron-image>
+              <paper-button>wstaw zdjęcie</paper-button>
+            </div>
+            <div class="edit-product-input-group">
+              <paper-input label="Nazwa" value="{{selectedProduct.name}}" type="text"></paper-input>
+              <div class="edit-product-three-group">
+                <paper-input label="Kaloryczność" value="{{selectedProduct.energy}}" type="number">
+                  <div suffix>kcal</div>
+                </paper-input>
+                <paper-input label="Cena" value="{{selectedProduct.price}}" type="number">
+                  <div suffix>zł</div>
+                </paper-input>
+                <paper-input label="Jednostka" value="{{selectedProduct.unit}}" type="text"></paper-input>
+              </div>
+            </div>
+            <div class="edit-product-button-group">
+              <paper-button on-click="viewProductListing">anuluj</paper-button>
+              <paper-button class="primary">zapisz</paper-button>
+            </div>
+          </paper-card>
+        </iron-pages>
+
+      </app-header-layout>
+
+    </app-drawer-layout>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'burgerparty-front-app',
+
+      ready: function() {
+        const EMPTY_PRODUCT = {
+          image: '',
+          name: '',
+          energy: 0,
+          price: 0,
+          unit: ''
+        };
+
+        this.recipes = [];
+        this.products = [];
+        this.categories = [];
+        this.selectedProduct = EMPTY_PRODUCT;
+
+        const drawerMenu = this.$['drawer-menu'];
+        const appDrawer = this.$['drawer'];
+
+        this.menuSelection = 0;
+        drawerMenu.addEventListener('iron-select', () => appDrawer.close());
+
+        this.fetchProducts();
+        this.fetchCategories();
+        this.fetchRecipies();
+      },
+
+      fetchRecipies() {
+        fetch('/recipes')
+          .then(res => res.json())
+          .then(recipes => { this.recipes = recipes; })
+          .then(() => console.log('recipes', this.recipes));
+      },
+
+      fetchProducts() {
+        fetch('/products')
+          .then(res => res.json())
+          .then(products => { this.products = products; })
+          .then(() => console.log('products', this.products));
+      },
+
+      fetchCategories() {
+        fetch('/categories')
+          .then(res => res.json())
+          .then(categories => { this.categories = categories; })
+          .then(() => console.log('categories', this.categories));
+      },
+
+      formatPrice(price) {
+        return price.toFixed(2) + ' zł';
+      },
+
+      selectProduct(ev) {
+        this.selectedProduct = ev.model.get('item');
+        this.menuSelection = 3;
+      },
+
+      viewProductListing() {
+        this.menuSelection = 1;
+      }
+    });
+  </script>
+</dom-module>
