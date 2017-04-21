@@ -204,7 +204,7 @@
             <h1 class="subtitle">Produkty</h1>
             <template is="dom-repeat" items="{{products}}">
               <div class="product-list-element" on-click="selectProduct">
-                <iron-image src="{{item.image}}" sizing="contain" fade></iron-image>
+                <iron-image src="{{item.imageUrl}}" sizing="contain" fade></iron-image>
                 <div class="product-list-element-text">
                   <div class="product-list-element-title">{{item.name}}</div>
                   <div class="product-list-element-info-container">
@@ -234,7 +234,7 @@
           <paper-card class="content-page">
             <h1 class="subtitle">Edytuj produkt</h1>
             <div class="edit-product-image-container">
-              <iron-image src="{{selectedProduct.image}}" sizing="contain" fade></iron-image>
+              <iron-image src="{{selectedProduct.imageUrl}}" sizing="contain" fade></iron-image>
               <paper-button>wstaw zdjęcie</paper-button>
             </div>
             <div class="edit-product-input-group">
@@ -251,7 +251,7 @@
             </div>
             <div class="edit-product-button-group">
               <paper-button on-click="viewProductListing">anuluj</paper-button>
-              <paper-button class="primary">zapisz</paper-button>
+              <paper-button class="primary" on-click="commitSelectedProduct">zapisz</paper-button>
             </div>
           </paper-card>
         </iron-pages>
@@ -267,17 +267,17 @@
 
       ready: function() {
         const EMPTY_PRODUCT = {
-          image: '',
           name: '',
           energy: 0,
           price: 0,
-          unit: ''
+          unit: '',
+          imageUrl: ''
         };
 
         this.recipes = [];
         this.products = [];
         this.categories = [];
-        this.selectedProduct = EMPTY_PRODUCT;
+        this.selectedProduct = Object.assign({}, EMPTY_PRODUCT);
 
         const drawerMenu = this.$['drawer-menu'];
         const appDrawer = this.$['drawer'];
@@ -291,21 +291,21 @@
       },
 
       fetchRecipies() {
-        fetch('/recipes')
+        return fetch('/recipes')
           .then(res => res.json())
           .then(recipes => { this.recipes = recipes; })
           .then(() => console.log('recipes', this.recipes));
       },
 
       fetchProducts() {
-        fetch('/products')
+        return fetch('/products')
           .then(res => res.json())
           .then(products => { this.products = products; })
           .then(() => console.log('products', this.products));
       },
 
       fetchCategories() {
-        fetch('/categories')
+        return fetch('/categories')
           .then(res => res.json())
           .then(categories => { this.categories = categories; })
           .then(() => console.log('categories', this.categories));
@@ -322,6 +322,34 @@
 
       viewProductListing() {
         this.menuSelection = 1;
+      },
+
+      commitSelectedProduct() {
+        const method = this.selectedProduct.id ? 'PUT' : 'POST';
+        const url = this.selectedProduct.id
+          ? `/products/${this.selectedProduct.id}`
+          : '/products';
+
+        fetch(url, {
+          method,
+          body: JSON.stringify(this.selectedProduct),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        }).then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            return res;
+          } else {
+            const error = new Error(`Nie udało się opublikować produktu`);
+            error.response = res;
+            throw error;
+          }
+        }).then(() => {
+          this.fetchProducts().then(() => {
+            this.viewProductListing();
+          });
+        }).catch((err) => console.error(err));
       }
     });
   </script>
