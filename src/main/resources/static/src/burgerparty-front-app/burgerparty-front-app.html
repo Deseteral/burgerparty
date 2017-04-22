@@ -30,7 +30,7 @@
       display: block;
 
       --main-color: #ffca28;
-      --accent-color: #d50000;
+      --accent-color: #f44336;
       --font-color: #000000;
       --font-color-acc: #ffffff;
     }
@@ -115,6 +115,17 @@
       color: var(--accent-color);
     }
 
+    .edit-product-inputs-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media(min-width: 460px) {
+      .edit-product-inputs-container {
+        flex-direction: row;
+      }
+    }
+
     .edit-product-input-group {
       margin-bottom: 16px;
     }
@@ -129,7 +140,7 @@
       flex-direction: column;
     }
 
-    @media(min-width: 500px) {
+    @media(min-width: 640px) {
       .edit-product-three-group {
         flex-direction: row;
       }
@@ -237,23 +248,25 @@
           </div>
           <paper-card class="content-page">
             <h1 class="subtitle">Edytuj produkt</h1>
-            <div class="edit-product-image-container">
-              <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="contain" preload fade></iron-image>
-              <form id="product-editor-image-form" action="/images" method="post" enctype="multipart/form-data">
-                <input type="file" name="image" on-change="postProductImageFile">
-              </form>
-              <paper-button on-click="productEditorImageOpenFilePicker">wstaw zdjęcie</paper-button>
-            </div>
-            <div class="edit-product-input-group">
-              <paper-input label="Nazwa" value="{{selectedProduct.name}}" type="text"></paper-input>
-              <div class="edit-product-three-group">
-                <paper-input label="Kaloryczność" value="{{selectedProduct.energy}}" type="number">
-                  <div suffix>kcal</div>
-                </paper-input>
-                <paper-input label="Cena" value="{{selectedProduct.price}}" type="number">
-                  <div suffix>zł</div>
-                </paper-input>
-                <paper-input label="Jednostka" value="{{selectedProduct.unit}}" type="text"></paper-input>
+            <div class="edit-product-inputs-container">
+              <div class="edit-product-image-container">
+                <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="contain" preload fade></iron-image>
+                <form id="product-editor-image-form" action="/images" method="post" enctype="multipart/form-data">
+                  <input type="file" name="image" on-change="postProductImageFile">
+                </form>
+                <paper-button on-click="productEditorImageOpenFilePicker">wstaw zdjęcie</paper-button>
+              </div>
+              <div class="edit-product-input-group">
+                <paper-input label="Nazwa" value="{{selectedProduct.name}}" type="text"></paper-input>
+                <div class="edit-product-three-group">
+                  <paper-input label="Kaloryczność" value="{{selectedProduct.energy}}" type="number">
+                    <div suffix>kcal</div>
+                  </paper-input>
+                  <paper-input label="Cena" value="{{selectedProduct.price}}" type="number">
+                    <div suffix>zł</div>
+                  </paper-input>
+                  <paper-input label="Jednostka" value="{{selectedProduct.unit}}" type="text"></paper-input>
+                </div>
               </div>
             </div>
             <div class="edit-product-button-group">
