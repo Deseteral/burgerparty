@@ -165,6 +165,10 @@
       margin: 8px;
       background: #fff;
     }
+
+    #product-editor-image-form {
+      display: none;
+    }
     </style>
     <app-drawer-layout force-narrow>
 
@@ -204,7 +208,7 @@
             <h1 class="subtitle">Produkty</h1>
             <template is="dom-repeat" items="{{products}}">
               <div class="product-list-element" on-click="selectProduct">
-                <iron-image src="{{item.imageUrl}}" sizing="contain" fade></iron-image>
+                <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
                 <div class="product-list-element-text">
                   <div class="product-list-element-title">{{item.name}}</div>
                   <div class="product-list-element-info-container">
@@ -234,8 +238,11 @@
           <paper-card class="content-page">
             <h1 class="subtitle">Edytuj produkt</h1>
             <div class="edit-product-image-container">
-              <iron-image src="{{selectedProduct.imageUrl}}" sizing="contain" fade></iron-image>
-              <paper-button>wstaw zdjęcie</paper-button>
+              <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="contain" preload fade></iron-image>
+              <form id="product-editor-image-form" action="/images" method="post" enctype="multipart/form-data">
+                <input type="file" name="image" on-change="postProductImageFile">
+              </form>
+              <paper-button on-click="productEditorImageOpenFilePicker">wstaw zdjęcie</paper-button>
             </div>
             <div class="edit-product-input-group">
               <paper-input label="Nazwa" value="{{selectedProduct.name}}" type="text"></paper-input>
@@ -350,6 +357,28 @@
             this.viewProductListing();
           });
         }).catch((err) => console.error(err));
+      },
+
+      productEditorImageOpenFilePicker() {
+        const form = this.$['product-editor-image-form'];
+        const filePicker = form.querySelector('input[type="file"]');
+        filePicker.click();
+      },
+
+      postProductImageFile() {
+        const form = this.$['product-editor-image-form'];
+        const formData = new FormData(form);
+
+        fetch('/images', {
+          method: 'post',
+          body: formData
+        }).then(res => res.json()).then(res => {
+          const imageElement = this.$['product-editor-image'];
+          this.selectedProduct.imageUrl = res.data.link;
+
+          imageElement.placeholder = imageElement.src;
+          imageElement.src = this.selectedProduct.imageUrl;
+        })
       }
     });
   </script>
