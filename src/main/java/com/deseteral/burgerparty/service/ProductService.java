@@ -20,6 +20,10 @@ public class ProductService {
         return repository.findAll();
     }
 
+    public Product getById(String id) {
+        return repository.findOne(id);
+    }
+
     public Product add(Product product) {
         return repository.save(
             Product.builder(product).build()

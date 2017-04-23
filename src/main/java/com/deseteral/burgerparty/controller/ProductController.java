@@ -29,6 +29,11 @@ public class ProductController {
         return service.getAll();
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    public Product findOne(@PathVariable(value = "id") String id) {
+        return service.getById(id);
+    }
+
     @RequestMapping(method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity create(@Valid @RequestBody Product product) {
         Product createdProduct = service.add(product);
