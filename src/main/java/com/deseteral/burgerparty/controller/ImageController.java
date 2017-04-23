@@ -1,6 +1,6 @@
 package com.deseteral.burgerparty.controller;
 
-import com.deseteral.burgerparty.domain.ImgurResponse;
+import com.deseteral.burgerparty.domain.imgur.ImgurResponse;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;

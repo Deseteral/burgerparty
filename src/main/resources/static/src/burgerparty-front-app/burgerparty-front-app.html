@@ -14,6 +14,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
@@ -59,6 +60,14 @@
       max-width: 960px;
       width: 100%;
       padding: 48px;
+    }
+
+    .fab-page-add {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      color: var(--font-color-acc);
+      background: var(--accent-color);
     }
 
     .title {
@@ -240,6 +249,7 @@
                 <paper-ripple></paper-ripple>
               </div>
             </template>
+            <paper-fab class="fab-page-add" icon="add" on-click="addNewProduct"></paper-fab>
           </paper-card>
           <div class="content-page category-listing">
             <template is="dom-repeat" items="{{categories}}">
@@ -247,7 +257,14 @@
             </template>
           </div>
           <paper-card class="content-page">
-            <h1 class="subtitle">Edytuj produkt</h1>
+            <template is="dom-if" if="{{selectedProduct.id}}">
+              <h1 class="subtitle">Edytuj produkt</h1>
+            </template>
+            <template is="dom-if" if="{{!selectedProduct.id}}">
+              <h1 class="subtitle">Dodaj nowy produkt</h1>
+            </template>
+
+
             <div class="edit-product-inputs-container">
               <div class="edit-product-image-container">
                 <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="contain" preload fade></iron-image>
@@ -282,18 +299,18 @@
   </template>
 
   <script>
+    const EMPTY_PRODUCT = {
+      name: '',
+      energy: 0,
+      price: 0,
+      unit: '',
+      imageUrl: ''
+    };
+
     Polymer({
       is: 'burgerparty-front-app',
 
       ready: function() {
-        const EMPTY_PRODUCT = {
-          name: '',
-          energy: 0,
-          price: 0,
-          unit: '',
-          imageUrl: ''
-        };
-
         this.recipes = [];
         this.products = [];
         this.categories = [];
@@ -337,11 +354,15 @@
 
       selectProduct(ev) {
         this.selectedProduct = ev.model.get('item');
-        this.menuSelection = 3;
+        this.viewProductEditor();
       },
 
       viewProductListing() {
         this.menuSelection = 1;
+      },
+
+      viewProductEditor() {
+        this.menuSelection = 3;
       },
 
       commitSelectedProduct() {
@@ -392,6 +413,11 @@
           imageElement.placeholder = imageElement.src;
           imageElement.src = this.selectedProduct.imageUrl;
         })
+      },
+
+      addNewProduct() {
+        this.selectedProduct = Object.assign({}, EMPTY_PRODUCT);
+        this.viewProductEditor();
       }
     });
   </script>

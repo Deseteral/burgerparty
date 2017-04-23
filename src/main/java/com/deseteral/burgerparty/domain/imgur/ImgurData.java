@@ -1,4 +1,4 @@
-package com.deseteral.burgerparty.domain;
+package com.deseteral.burgerparty.domain.imgur;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
