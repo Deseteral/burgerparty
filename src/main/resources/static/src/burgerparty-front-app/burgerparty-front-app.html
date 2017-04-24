@@ -219,11 +219,15 @@
         </app-header>
 
         <iron-pages class="content-pages" selected="{{menuSelection}}">
+
+          <!-- Landing page -->
           <paper-card class="content-page">
             <h1 class="title">Na co masz dziś ochotę?</h1>
             <h2 class="subtitle">Wybierz i przygotuj coś spośród swoich [[recipes.length]] przepisów!</h2>
             <paper-button class="primary">losowy przepis</paper-button>
           </paper-card>
+
+          <!-- Product listing -->
           <paper-card class="content-page">
             <h1 class="subtitle">Produkty</h1>
             <template is="dom-repeat" items="{{products}}">
@@ -247,11 +251,18 @@
             </template>
             <paper-fab class="fab-page-add" icon="add" on-click="addNewProduct"></paper-fab>
           </paper-card>
+
+          <!-- Category listing -->
           <div class="content-page category-listing">
             <template is="dom-repeat" items="{{categories}}">
-              <paper-button class="category-listing-item" raised>{{item.name}}</paper-button>
+              <paper-button class="category-listing-item" on-click="selectCategory" raised>
+                {{item.name}}
+              </paper-button>
             </template>
+            <paper-fab class="fab-page-add" icon="add" on-click="addNewRecipe"></paper-fab>
           </div>
+
+          <!-- Product editor -->
           <paper-card class="content-page">
             <template is="dom-if" if="{{selectedProduct.id}}">
               <h1 class="subtitle">Edytuj produkt</h1>
@@ -259,8 +270,6 @@
             <template is="dom-if" if="{{!selectedProduct.id}}">
               <h1 class="subtitle">Dodaj nowy produkt</h1>
             </template>
-
-
             <div class="edit-product-inputs-container">
               <div class="edit-product-image-container">
                 <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="contain" preload fade></iron-image>
@@ -287,6 +296,29 @@
               <paper-button class="primary" on-click="commitSelectedProduct">zapisz</paper-button>
             </div>
           </paper-card>
+
+          <!-- Recipe listing (in category) -->
+          <paper-card class="content-page">
+            <h1 class="subtitle">{{selectedCategory.name}}</h1>
+            <template is="dom-repeat" items="{{recipes}}">
+              <div class="recipe-list-element" on-click="selectRecipe">
+                <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
+                <div>{{item.title}}</div>
+                <paper-ripple></paper-ripple>
+              </div>
+            </template>
+            <paper-fab class="fab-page-add" icon="add" on-click="addNewRecipe"></paper-fab>
+          </paper-card>
+
+          <!-- Recipe view -->
+          <paper-card class="content-page">
+            <h1 class="subtitle">{{selectedRecipe.title}}</h1>
+          </paper-card>
+
+          <!-- Recipe editor -->
+          <paper-card class="content-page">
+            <h1 class="subtitle">{{selectedRecipe.title}} editor</h1>
+          </paper-card>
         </iron-pages>
 
       </app-header-layout>
@@ -303,6 +335,17 @@
       imageUrl: ''
     };
 
+    const EMPTY_RECIPE = {
+      title: '',
+      category: '',
+      imageUrl: '',
+      products: [],
+      description: '',
+      timeToPrepare: 0,
+      difficulty: 'EASY',
+      portions: 0
+    };
+
     Polymer({
       is: 'burgerparty-front-app',
 
@@ -311,6 +354,7 @@
         this.products = [];
         this.categories = [];
         this.selectedProduct = Object.assign({}, EMPTY_PRODUCT);
+        this.selectedCategory = null;
 
         const drawerMenu = this.$['drawer-menu'];
         const appDrawer = this.$['drawer'];
@@ -353,12 +397,42 @@
         this.viewProductEditor();
       },
 
+      selectRecipe(ev) {
+        this.selectedRecipe = ev.model.get('item');
+        this.viewRecipe();
+      },
+
+      selectCategory(ev) {
+        this.selectedCategory = ev.model.get('item');
+        this.viewRecipeListing();
+      },
+
+      viewLandingPage() {
+        this.menuSelection = 0;
+      },
+
       viewProductListing() {
         this.menuSelection = 1;
       },
 
+      viewCategoryListing() {
+        this.menuSelection = 2;
+      },
+
       viewProductEditor() {
         this.menuSelection = 3;
+      },
+
+      viewRecipeListing() {
+        this.menuSelection = 4;
+      },
+
+      viewRecipe() {
+        this.menuSelection = 5;
+      },
+
+      viewRecipeEditor() {
+        this.menuSelection = 6;
       },
 
       commitSelectedProduct() {
@@ -414,7 +488,12 @@
       addNewProduct() {
         this.selectedProduct = Object.assign({}, EMPTY_PRODUCT);
         this.viewProductEditor();
-      }
+      },
+
+      addNewRecipe() {
+        this.selectedRecipe = Object.assign({}, EMPTY_RECIPE);
+        this.viewRecipeEditor();
+      },
     });
   </script>
 </dom-module>
