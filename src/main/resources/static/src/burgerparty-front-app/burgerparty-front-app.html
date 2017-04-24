@@ -85,43 +85,52 @@
       margin-bottom: 24px;
     }
 
-    .product-list-element {
+    .list-element {
       display: flex;
       align-items: center;
       position: relative;
       height: 96px;
       margin-left: -48px;
       margin-right: -48px;
+      padding-right: 16px;
     }
 
-    .product-list-element iron-image {
+    .list-element paper-ripple {
+      color: var(--accent-color);
+    }
+
+    .list-element iron-image {
       width: 96px;
       height: 96px;
       margin-right: 16px;
       margin-left: 16px;
     }
 
-    .product-list-element-title {
+    .list-element-title {
       font-size: 24px;
+      flex: 1;
     }
 
-    .product-list-element-text {
+    .list-element-data {
       display: flex;
       flex-direction: column;
-      flex-grow: 1;
+      align-items: center;
+      width: 110px;
+      border-left: solid grey 1px;
     }
 
-    .product-list-element-info-container {
-      display: flex;
+    .list-element-data.last {
+      border-right: solid grey 1px;
     }
 
-    .product-list-element-info {
-      flex-grow: 1;
-      width: 100%;
+    .list-element-data-label {
+      opacity: 0.54;
     }
 
-    .product-list-element paper-ripple {
+    .list-element-data-content {
+      font-size: 24px;
       color: var(--accent-color);
+      opacity: 0.87;
     }
 
     .edit-product-inputs-container {
@@ -231,20 +240,16 @@
           <paper-card class="content-page">
             <h1 class="subtitle">Produkty</h1>
             <template is="dom-repeat" items="{{products}}">
-              <div class="product-list-element" on-click="selectProduct">
+              <div class="list-element" on-click="selectProduct">
                 <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
-                <div class="product-list-element-text">
-                  <div class="product-list-element-title">{{item.name}}</div>
-                  <div class="product-list-element-info-container">
-                    <div class="product-list-element-info">
-                      <span>Energia: </span>
-                      <span>{{item.energy}}kcal</span>
-                    </div>
-                    <div class="product-list-element-info">
-                      <span>Cena: </span>
-                      <span>{{formatPrice(item.price)}}</span>
-                    </div>
-                  </div>
+                <div class="list-element-title">{{item.name}}</div>
+                <div class="list-element-data">
+                  <div class="list-element-data-label">Energia</div>
+                  <div class="list-element-data-content">{{item.energy}}kcal</div>
+                </div>
+                <div class="list-element-data last">
+                  <div class="list-element-data-label">Cena</div>
+                  <div class="list-element-data-content">{{formatPrice(item.price)}}</div>
                 </div>
                 <paper-ripple></paper-ripple>
               </div>
