@@ -34,6 +34,10 @@
       --accent-color: #f44336;
       --font-color: #000000;
       --font-color-acc: #ffffff;
+
+      --paper-input-container-color: var(--accent-color);
+      --paper-input-container-focus-color: var(--accent-color);
+      --paper-input-container-input-color: var(--font-color);
     }
 
     app-header {
@@ -85,6 +89,10 @@
       margin-bottom: 24px;
     }
 
+    .subtitle.capitalize {
+      text-transform: capitalize;
+    }
+
     .list-element {
       display: flex;
       align-items: center;
@@ -115,16 +123,18 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 110px;
-      border-left: solid grey 1px;
+      padding: 0 16px;
+      border-left: solid #777777 1px;
     }
 
     .list-element-data.last {
-      border-right: solid grey 1px;
+      border-right: solid #777777 1px;
     }
 
     .list-element-data-label {
+      text-align: center;
       opacity: 0.54;
+      text-transform: uppercase;
     }
 
     .list-element-data-content {
@@ -180,7 +190,6 @@
     .category-listing {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
       padding: 48px 0;
     }
 
@@ -244,11 +253,11 @@
                 <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
                 <div class="list-element-title">{{item.name}}</div>
                 <div class="list-element-data">
-                  <div class="list-element-data-label">Energia</div>
-                  <div class="list-element-data-content">{{item.energy}}kcal</div>
+                  <div class="list-element-data-label">kaloryczność</div>
+                  <div class="list-element-data-content">{{item.energy}} kcal</div>
                 </div>
                 <div class="list-element-data last">
-                  <div class="list-element-data-label">Cena</div>
+                  <div class="list-element-data-label">cena</div>
                   <div class="list-element-data-content">{{formatPrice(item.price)}}</div>
                 </div>
                 <paper-ripple></paper-ripple>
@@ -304,11 +313,23 @@
 
           <!-- Recipe listing (in category) -->
           <paper-card class="content-page">
-            <h1 class="subtitle">{{selectedCategory.name}}</h1>
+            <h1 class="subtitle capitalize">{{selectedCategory.name}}</h1>
             <template is="dom-repeat" items="{{recipes}}">
-              <div class="recipe-list-element" on-click="selectRecipe">
+              <div class="list-element" on-click="selectRecipe">
                 <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
-                <div>{{item.title}}</div>
+                <div class="list-element-title">{{item.title}}</div>
+                <div class="list-element-data">
+                  <div class="list-element-data-label">przygotowanie</div>
+                  <div class="list-element-data-content">{{formatTimeToPrepare(item.timeToPrepare)}}</div>
+                </div>
+                <div class="list-element-data">
+                  <div class="list-element-data-label">poziom trudności</div>
+                  <div class="list-element-data-content">{{mapDifficultyToLabel(item.difficulty)}}</div>
+                </div>
+                <div class="list-element-data last">
+                  <div class="list-element-data-label">porcje</div>
+                  <div class="list-element-data-content">{{formatPortions(item.portions)}}</div>
+                </div>
                 <paper-ripple></paper-ripple>
               </div>
             </template>
@@ -499,6 +520,49 @@
         this.selectedRecipe = Object.assign({}, EMPTY_RECIPE);
         this.viewRecipeEditor();
       },
+
+      mapDifficultyToLabel(difficulty) {
+        if (difficulty === 'EASY') {
+          return 'łatwy';
+        }
+
+        if (difficulty === 'MEDIUM') {
+          return 'średni';
+        }
+
+        if (difficulty === 'HARD') {
+          return 'trudny';
+        }
+      },
+
+      formatTimeToPrepare(minutes) {
+        const hh = minutes / 60;
+        const mm = minutes % 60;
+
+        if (minutes === 0) {
+          return '-';
+        }
+
+        if (hh > 0 && mm > 0) {
+          return `${hh}h ${mm}m`;
+        }
+
+        if (hh === 0 && mm > 0) {
+          return `${mm}m`;
+        }
+
+        if (hh > 0 && mm === 0) {
+          return `${hh}h`;
+        }
+      },
+
+      formatPortions(portions) {
+        if (portions === 0) {
+          return '-';
+        } else {
+          return portions;
+        }
+      }
     });
   </script>
 </dom-module>
