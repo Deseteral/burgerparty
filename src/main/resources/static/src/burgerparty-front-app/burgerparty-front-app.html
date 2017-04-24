@@ -117,6 +117,7 @@
     .list-element-title {
       font-size: 24px;
       flex: 1;
+      opacity: 0.87;
     }
 
     .list-element-data {
@@ -250,7 +251,7 @@
             <h1 class="subtitle">Produkty</h1>
             <template is="dom-repeat" items="{{products}}">
               <div class="list-element" on-click="selectProduct">
-                <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
+                <iron-image src="{{item.imageUrl}}" sizing="cover" preload fade></iron-image>
                 <div class="list-element-title">{{item.name}}</div>
                 <div class="list-element-data">
                   <div class="list-element-data-label">kaloryczność</div>
@@ -268,6 +269,9 @@
 
           <!-- Category listing -->
           <div class="content-page category-listing">
+            <paper-button class="category-listing-item" on-click="selectCategory" raised>
+              wszystkie
+            </paper-button>
             <template is="dom-repeat" items="{{categories}}">
               <paper-button class="category-listing-item" on-click="selectCategory" raised>
                 {{item.name}}
@@ -286,7 +290,7 @@
             </template>
             <div class="edit-product-inputs-container">
               <div class="edit-product-image-container">
-                <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="contain" preload fade></iron-image>
+                <iron-image id="product-editor-image" src="{{selectedProduct.imageUrl}}" sizing="cover" preload fade></iron-image>
                 <form id="product-editor-image-form" action="/images" method="post" enctype="multipart/form-data">
                   <input type="file" name="image" on-change="postProductImageFile">
                 </form>
@@ -314,9 +318,9 @@
           <!-- Recipe listing (in category) -->
           <paper-card class="content-page">
             <h1 class="subtitle capitalize">{{selectedCategory.name}}</h1>
-            <template is="dom-repeat" items="{{recipes}}">
+            <template is="dom-repeat" items="{{queriedRecipes}}">
               <div class="list-element" on-click="selectRecipe">
-                <iron-image src="{{item.imageUrl}}" sizing="contain" preload fade></iron-image>
+                <iron-image src="{{item.imageUrl}}" sizing="cover" preload fade></iron-image>
                 <div class="list-element-title">{{item.title}}</div>
                 <div class="list-element-data">
                   <div class="list-element-data-label">przygotowanie</div>
@@ -377,6 +381,7 @@
 
       ready: function() {
         this.recipes = [];
+        this.queriedRecipes = [];
         this.products = [];
         this.categories = [];
         this.selectedProduct = Object.assign({}, EMPTY_PRODUCT);
@@ -398,6 +403,13 @@
           .then(res => res.json())
           .then(recipes => { this.recipes = recipes; })
           .then(() => console.log('recipes', this.recipes));
+      },
+
+      fetchRecipiesWithId(id) {
+        return fetch(`/recipes?categoryId=${id}`)
+          .then(res => res.json())
+          .then(recipes => { this.queriedRecipes = recipes; })
+          .then(() => console.log('queriedRecipes', this.recipes));
       },
 
       fetchProducts() {
@@ -429,8 +441,15 @@
       },
 
       selectCategory(ev) {
-        this.selectedCategory = ev.model.get('item');
-        this.viewRecipeListing();
+        if (!ev.model) {
+          this.selectedCategory = { name: 'Wszystkie przepisy' };
+          this.queriedRecipes = this.recipes;
+          this.viewRecipeListing();
+        } else {
+          this.selectedCategory = ev.model.get('item');
+          this.fetchRecipiesWithId(this.selectedCategory.id);
+          this.viewRecipeListing();
+        }
       },
 
       viewLandingPage() {
@@ -536,8 +555,8 @@
       },
 
       formatTimeToPrepare(minutes) {
-        const hh = minutes / 60;
-        const mm = minutes % 60;
+        const hh = parseInt(minutes / 60, 10);
+        const mm = parseInt(minutes % 60, 10);
 
         if (minutes === 0) {
           return '-';

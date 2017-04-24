@@ -17,4 +17,8 @@ public class RecipeService {
     public Iterable<Recipe> getAll() {
         return repository.findAll();
     }
+
+    public Iterable<Recipe> getWithCategoryId(String categoryId) {
+        return repository.findWithCategoryId(categoryId);
+    }
 }
