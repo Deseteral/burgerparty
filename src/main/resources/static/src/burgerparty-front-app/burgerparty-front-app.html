@@ -38,6 +38,8 @@
       --paper-input-container-color: var(--accent-color);
       --paper-input-container-focus-color: var(--accent-color);
       --paper-input-container-input-color: var(--font-color);
+
+      --paper-icon-button-ink-color: var(--accent-color);
     }
 
     app-header {
@@ -64,6 +66,12 @@
       max-width: 960px;
       width: 100%;
       padding: 48px;
+    }
+
+    .content-page-back-button {
+      display: flex;
+      margin-left: -16px;
+      margin-right: 16px;
     }
 
     .fab-page-add {
@@ -317,7 +325,10 @@
 
           <!-- Recipe listing (in category) -->
           <paper-card class="content-page">
-            <h1 class="subtitle capitalize">{{selectedCategory.name}}</h1>
+            <div class="content-page-back-button">
+              <paper-icon-button icon="arrow-back" on-click="viewCategoryListing"></paper-icon-button>
+              <h1 class="subtitle capitalize">{{selectedCategory.name}}</h1>
+            </div>
             <template is="dom-repeat" items="{{queriedRecipes}}">
               <div class="list-element" on-click="selectRecipe">
                 <iron-image src="{{item.imageUrl}}" sizing="cover" preload fade></iron-image>
@@ -342,7 +353,10 @@
 
           <!-- Recipe view -->
           <paper-card class="content-page">
-            <h1 class="subtitle">{{selectedRecipe.title}}</h1>
+            <div class="content-page-back-button">
+              <paper-icon-button icon="arrow-back" on-click="viewRecipeListing"></paper-icon-button>
+              <h1 class="subtitle">{{selectedRecipe.title}}</h1>
+            </div>
           </paper-card>
 
           <!-- Recipe editor -->
