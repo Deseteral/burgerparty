@@ -51,4 +51,6 @@ public class ProductController {
 
         return accepted().body(updatedProduct);
     }
+
+    // TODO: add delete method
 }
