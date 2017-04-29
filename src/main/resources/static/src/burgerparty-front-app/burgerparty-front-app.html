@@ -216,6 +216,25 @@
     #product-editor-image-form {
       display: none;
     }
+
+    .recipe-view--container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .recipe-view--image-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .recipe-view--infos {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 16px;
+    }
     </style>
     <app-drawer-layout force-narrow>
 
@@ -355,7 +374,29 @@
           <paper-card class="content-page">
             <div class="content-page-back-button">
               <paper-icon-button icon="arrow-back" on-click="viewRecipeListing"></paper-icon-button>
-              <h1 class="subtitle">{{selectedRecipe.title}}</h1>
+              <div class="recipe-view--container">
+                <h1 class="subtitle">{{selectedRecipe.title}}</h1>
+                <div class="recipe-view--image-container">
+                  <iron-image src="{{selectedRecipe.imageUrl}}"></iron-image>
+                </div>
+                <h2>Składniki:</h2>
+                <h2>Sposób wykonania:</h2>
+                <div>{{selectedRecipe.description}}</div>
+                <div class="recipe-view--infos">
+                  <div class="list-element-data">
+                    <div class="list-element-data-label">przygotowanie</div>
+                    <div class="list-element-data-content">{{formatTimeToPrepare(selectedRecipe.timeToPrepare)}}</div>
+                  </div>
+                  <div class="list-element-data">
+                    <div class="list-element-data-label">poziom trudności</div>
+                    <div class="list-element-data-content">{{mapDifficultyToLabel(selectedRecipe.difficulty)}}</div>
+                  </div>
+                  <div class="list-element-data last">
+                    <div class="list-element-data-label">porcje</div>
+                    <div class="list-element-data-content">{{formatPortions(selectedRecipe.portions)}}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </paper-card>
 
