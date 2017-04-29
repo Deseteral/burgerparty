@@ -15,7 +15,7 @@ public class Recipe {
     private final String imageUrl;
 
     @Indexed
-    private final List<Product> products;
+    private final List<ProductAmount> products;
 
     private final String description;
     private final Integer timeToPrepare;
@@ -28,7 +28,7 @@ public class Recipe {
         @JsonProperty("title") String title,
         @JsonProperty("category") String category,
         @JsonProperty("imageUrl") String imageUrl,
-        @JsonProperty("products") List<Product> products,
+        @JsonProperty("products") List<ProductAmount> products,
         @JsonProperty("description") String description,
         @JsonProperty("timeToPrepare") Integer timeToPrepare,
         @JsonProperty("difficulty") String difficulty,
@@ -61,7 +61,7 @@ public class Recipe {
         return imageUrl;
     }
 
-    public List<Product> getProducts() {
+    public List<ProductAmount> getProducts() {
         return products;
     }
 
@@ -90,7 +90,7 @@ public class Recipe {
         private String title;
         private String category;
         private String imageUrl;
-        private List<Product> products;
+        private List<ProductAmount> products;
         private String description;
         private Integer timeToPrepare;
         private String difficulty;
