@@ -229,6 +229,18 @@
       width: 100%;
     }
 
+    .recipe-view--product-list {
+      margin: 0;
+    }
+
+    .recipe-view--product {
+      font-size: 20px;
+    }
+
+    .recipe-view--product-unit {
+      color: var(--accent-color);
+    }
+
     .recipe-view--infos {
       display: flex;
       justify-content: center;
@@ -380,11 +392,19 @@
                   <iron-image src="{{selectedRecipe.imageUrl}}"></iron-image>
                 </div>
                 <h2>Składniki:</h2>
+                <ul class="recipe-view--product-list">
+                  <template is="dom-repeat" items="{{selectedRecipe.products}}">
+                    <li class="recipe-view--product">
+                      <span>{{mapIdToProductName(item.product)}}</span>
+                      <span class="recipe-view--product-unit">{{item.amount}}{{mapIdToProductUnit(item.product)}}</span>
+                    </li>
+                  </template>
+                </ul>
                 <h2>Sposób wykonania:</h2>
                 <div>{{selectedRecipe.description}}</div>
                 <div class="recipe-view--infos">
                   <div class="list-element-data">
-                    <div class="list-element-data-label">przygotowanie</div>
+                    <div class="list-element-data-label">czas przygotowania</div>
                     <div class="list-element-data-content">{{formatTimeToPrepare(selectedRecipe.timeToPrepare)}}</div>
                   </div>
                   <div class="list-element-data">
@@ -392,7 +412,7 @@
                     <div class="list-element-data-content">{{mapDifficultyToLabel(selectedRecipe.difficulty)}}</div>
                   </div>
                   <div class="list-element-data last">
-                    <div class="list-element-data-label">porcje</div>
+                    <div class="list-element-data-label">ilość porcji</div>
                     <div class="list-element-data-content">{{formatPortions(selectedRecipe.portions)}}</div>
                   </div>
                 </div>
@@ -636,7 +656,15 @@
         } else {
           return portions;
         }
-      }
+      },
+
+      mapIdToProductName(id) {
+        return this.products.filter(p => p.id === id)[0].name;
+      },
+
+      mapIdToProductUnit(id) {
+        return this.products.filter(p => p.id === id)[0].unit;
+      },
     });
   </script>
 </dom-module>
