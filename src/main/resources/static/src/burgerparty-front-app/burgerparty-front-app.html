@@ -246,7 +246,7 @@
       display: flex;
       justify-content: center;
       width: 100%;
-      margin-top: 16px;
+      margin-top: 48px;
     }
     </style>
     <app-drawer-layout force-narrow>
@@ -405,6 +405,14 @@
                 <div>{{selectedRecipe.description}}</div>
                 <div class="recipe-view--infos">
                   <div class="list-element-data">
+                    <div class="list-element-data-label">kaloryczność</div>
+                    <div class="list-element-data-content">{{selectedRecipe.energy}}kcal</div>
+                  </div>
+                  <div class="list-element-data">
+                    <div class="list-element-data-label">koszt</div>
+                    <div class="list-element-data-content">ok. {{formatPrice(selectedRecipe.cost)}}</div>
+                  </div>
+                  <div class="list-element-data">
                     <div class="list-element-data-label">czas przygotowania</div>
                     <div class="list-element-data-content">{{formatTimeToPrepare(selectedRecipe.timeToPrepare)}}</div>
                   </div>
@@ -482,6 +490,8 @@
       },
 
       fetchRecipiesWithId(id) {
+        this.queriedRecipes = [];
+
         return fetch(`/recipes?categoryId=${id}`)
           .then(res => res.json())
           .then(recipes => { this.queriedRecipes = recipes; })
