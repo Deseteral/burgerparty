@@ -14,7 +14,10 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
@@ -173,6 +176,11 @@
       height: 128px;
     }
 
+    .edit-recipe-image-container iron-image{
+      width: 256px;
+      height: 256px;
+    }
+
     .edit-product-three-group {
       display: flex;
       flex-direction: column;
@@ -218,6 +226,10 @@
       display: none;
     }
 
+    #recipe-editor-image-form {
+      display: none;
+    }
+
     .recipe-view--container {
       display: flex;
       flex-direction: column;
@@ -247,6 +259,32 @@
       justify-content: center;
       width: 100%;
       margin-top: 48px;
+    }
+
+    .recipe-editor-header {
+      display: flex;
+    }
+
+    .recipe-editor-title {
+      margin-right: 16px;
+      flex: 1;
+    }
+
+    .recipe-editor-product {
+      display: flex;
+    }
+
+    .recipe-editor-product-dropdown {
+      margin-right: 16px;
+    }
+
+    .recipe-editor-product-amount {
+      width: 75px;
+    }
+
+    .recipe-editor-add-product {
+      margin: 0;
+      color: var(--accent-color);
     }
     </style>
     <app-drawer-layout force-narrow>
@@ -427,11 +465,59 @@
                 </div>
               </div>
             </div>
+            <paper-fab class="fab-page-add" icon="create" on-click="viewRecipeEditor"></paper-fab>
           </paper-card>
 
           <!-- Recipe editor -->
           <paper-card class="content-page">
-            <h1 class="subtitle">{{selectedRecipe.title}} editor</h1>
+            <div class="recipe-editor-header">
+              <paper-input class="recipe-editor-title" label="Tytuł" value="{{editedRecipe.title}}" type="text"></paper-input>
+              <paper-dropdown-menu label="Kategoria">
+                <paper-listbox selected="{{editedRecipe.category}}" attr-for-selected="category-id" class="dropdown-content">
+                  <template is="dom-repeat" items="{{categories}}">
+                    <paper-item category-id="{{item.id}}">{{item.name}}</paper-item>
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
+            <div class="edit-recipe-image-container">
+              <iron-image id="recipe-editor-image" src="{{editedRecipe.imageUrl}}" sizing="contain" preload fade></iron-image>
+              <form id="recipe-editor-image-form" action="/images" method="post" enctype="multipart/form-data">
+                <input type="file" name="image" on-change="postRecipeImageFile">
+              </form>
+              <paper-button on-click="recipeEditorImageOpenFilePicker">wstaw zdjęcie</paper-button>
+            </div>
+            <template id="edit-recipe-products-template" is="dom-repeat" items="{{editedRecipe.products}}">
+              <div class="recipe-editor-product">
+                <paper-dropdown-menu class="recipe-editor-product-dropdown" label="Produkt">
+                  <paper-listbox selected="{{item.product}}" attr-for-selected="product-id" class="dropdown-content">
+                    <template is="dom-repeat" items="{{products}}" as="product">
+                      <paper-item product-id="{{product.id}}">{{product.name}}</paper-item>
+                    </template>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-input class="recipe-editor-product-amount" label="Ilość" value="{{item.amount}}" type="number"></paper-input>
+              </div>
+            </template>
+            <paper-button class="recipe-editor-add-product" on-click="recipeEditorAddProduct">Dodaj produkt</paper-button>
+            <paper-textarea label="Sposób wykonania" value="{{editedRecipe.description}}" type="text"></paper-textarea>
+            <div class="edit-product-three-group">
+              <paper-input label="Czas przygotowania" value="{{editedRecipe.timeToPrepare}}" type="number">
+                <div suffix>minut</div>
+              </paper-input>
+              <paper-dropdown-menu label="Poziom trudności">
+                <paper-listbox selected="{{editedRecipe.difficulty}}" attr-for-selected="name" class="dropdown-content">
+                  <paper-item name="EASY">łatwy</paper-item>
+                  <paper-item name="MEDIUM">średni</paper-item>
+                  <paper-item name="HARD">trudny</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input label="Ilość porcji" value="{{editedRecipe.portions}}" type="number"></paper-input>
+            </div>
+            <div class="edit-product-button-group">
+              <paper-button on-click="viewRecipeListing">anuluj</paper-button>
+              <paper-button class="primary" on-click="commitEditedRecipe">zapisz</paper-button>
+            </div>
           </paper-card>
         </iron-pages>
 
@@ -470,6 +556,8 @@
         this.categories = [];
         this.selectedProduct = Object.assign({}, EMPTY_PRODUCT);
         this.selectedCategory = null;
+        this.selectedRecipe = EMPTY_RECIPE;
+        this.editedRecipe = EMPTY_RECIPE;
 
         const drawerMenu = this.$['drawer-menu'];
         const appDrawer = this.$['drawer'];
@@ -512,7 +600,7 @@
           .then(() => console.log('categories', this.categories));
       },
 
-      formatPrice(price) {
+      formatPrice(price = 0) {
         return price.toFixed(2) + ' zł';
       },
 
@@ -563,6 +651,7 @@
       },
 
       viewRecipeEditor() {
+        this.selectedRecipeToEditedRecipe();
         this.menuSelection = 6;
       },
 
@@ -594,6 +683,55 @@
         }).catch((err) => console.error(err));
       },
 
+      commitEditedRecipe() {
+        const productIds =
+          [...document.querySelectorAll('.recipe-editor-product-dropdown')]
+          .map(node => node.value)
+          .map(name => this.products.filter(p => p.name === name)[0].id);
+
+        const productAmounts =
+          [...document.querySelectorAll('.recipe-editor-product-amount')]
+          .map(node => node.value)
+          .map(v => parseInt(v));
+
+        let products = [];
+        for (let i = 0; i < productIds.length; i++) {
+          if (productIds[i] && productAmounts[i]) {
+            products.push({
+              product: productIds[i],
+              amount: productAmounts[i]
+            });
+          }
+        }
+        this.editedRecipe.products = products;
+
+        const method = this.editedRecipe.id ? 'PUT' : 'POST';
+        const url = this.editedRecipe.id
+          ? `/recipes/${this.editedRecipe.id}`
+          : '/recipes';
+
+        fetch(url, {
+          method,
+          body: JSON.stringify(this.editedRecipe),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        }).then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            return res;
+          } else {
+            const error = new Error(`Nie udało się opublikować przepisu`);
+            error.response = res;
+            throw error;
+          }
+        }).then(() => {
+          this.fetchProducts().then(() => {
+            this.viewRecipeListing();
+          });
+        }).catch((err) => console.error(err));
+      },
+
       productEditorImageOpenFilePicker() {
         const form = this.$['product-editor-image-form'];
         const filePicker = form.querySelector('input[type="file"]');
@@ -613,6 +751,28 @@
 
           imageElement.placeholder = imageElement.src;
           imageElement.src = this.selectedProduct.imageUrl;
+        })
+      },
+
+      recipeEditorImageOpenFilePicker() {
+        const form = this.$['recipe-editor-image-form'];
+        const filePicker = form.querySelector('input[type="file"]');
+        filePicker.click();
+      },
+
+      postRecipeImageFile() {
+        const form = this.$['recipe-editor-image-form'];
+        const formData = new FormData(form);
+
+        fetch('/images', {
+          method: 'post',
+          body: formData
+        }).then(res => res.json()).then(res => {
+          const imageElement = this.$['recipe-editor-image'];
+          this.editedRecipe.imageUrl = res.data.link;
+
+          imageElement.placeholder = imageElement.src;
+          imageElement.src = this.editedRecipe.imageUrl;
         })
       },
 
@@ -676,6 +836,22 @@
       mapIdToProductUnit(id) {
         return this.products.filter(p => p.id === id)[0].unit;
       },
+
+      selectedRecipeToEditedRecipe() {
+        this.editedRecipe = Object.assign(
+          {},
+          EMPTY_RECIPE,
+          this.selectedRecipe,
+        );
+      },
+
+      recipeEditorAddProduct() {
+        const template = this.$['edit-recipe-products-template'];
+
+        this.editedRecipe.products.push({ product: '', amount: 0 });
+        template.items = this.editedRecipe.products;
+        template.render();
+      }
     });
   </script>
 </dom-module>
