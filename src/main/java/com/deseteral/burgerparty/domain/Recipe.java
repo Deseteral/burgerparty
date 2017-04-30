@@ -21,6 +21,8 @@ public class Recipe {
     private final Integer timeToPrepare;
     private final String difficulty;
     private final Integer portions;
+    private final Double cost;
+    private final Integer energy;
 
     @JsonCreator
     Recipe(
@@ -32,7 +34,9 @@ public class Recipe {
         @JsonProperty("description") String description,
         @JsonProperty("timeToPrepare") Integer timeToPrepare,
         @JsonProperty("difficulty") String difficulty,
-        @JsonProperty("portions") Integer portions
+        @JsonProperty("portions") Integer portions,
+        @JsonProperty("cost") Double cost,
+        @JsonProperty("energy") Integer energy
     ) {
         this.id = id;
         this.title = title;
@@ -43,6 +47,8 @@ public class Recipe {
         this.timeToPrepare = timeToPrepare;
         this.difficulty = difficulty;
         this.portions = portions;
+        this.cost = cost;
+        this.energy = energy;
     }
 
     public String getId() {
@@ -81,6 +87,14 @@ public class Recipe {
         return portions;
     }
 
+    public Double getCost() {
+        return cost;
+    }
+
+    public Integer getEnergy() {
+        return energy;
+    }
+
     public static Builder builder(Recipe recipe) {
         return new Builder(recipe);
     }
@@ -95,6 +109,8 @@ public class Recipe {
         private Integer timeToPrepare;
         private String difficulty;
         private Integer portions;
+        private Double cost;
+        private Integer energy;
 
         private Builder(Recipe recipe) {
             this.id = recipe.getId();
@@ -106,10 +122,22 @@ public class Recipe {
             this.timeToPrepare = recipe.getTimeToPrepare();
             this.difficulty = recipe.getDifficulty();
             this.portions = recipe.getPortions();
+            this.cost = recipe.getCost();
+            this.energy = recipe.getEnergy();
+        }
+
+        public Builder withCost(Double cost) {
+            this.cost = cost;
+            return this;
+        }
+
+        public Builder withEnergy(Integer energy) {
+            this.energy = energy;
+            return this;
         }
 
         public Recipe build() {
-            return new Recipe(id, title, category, imageUrl, products, description, timeToPrepare, difficulty, portions);
+            return new Recipe(id, title, category, imageUrl, products, description, timeToPrepare, difficulty, portions, cost, energy);
         }
     }
 }
