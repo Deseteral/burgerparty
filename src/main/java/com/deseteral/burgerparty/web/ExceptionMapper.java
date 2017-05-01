@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class DefaultExceptionMapper {
+public class ExceptionMapper {
     @ExceptionHandler(KeyNotFoundException.class)
     public ResponseEntity<Error> handleException(KeyNotFoundException exception) {
         Error error = new Error.Builder()
