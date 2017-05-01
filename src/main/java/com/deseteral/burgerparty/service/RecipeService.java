@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -16,11 +19,13 @@ import java.util.stream.StreamSupport;
 public class RecipeService {
     private final RecipeRepository repository;
     private final ProductService productService;
+    private final Random randomGenerator;
 
     @Autowired
     public RecipeService(RecipeRepository repository, ProductService productService) {
         this.repository = repository;
         this.productService = productService;
+        this.randomGenerator = new Random();
     }
 
     public Iterable<Recipe> getAll() {
@@ -32,6 +37,10 @@ public class RecipeService {
             .collect(Collectors.toList());
     }
 
+    public Recipe getById(String id) {
+        return recipeWithCostAndEnergy(repository.findById(id));
+    }
+
     public Iterable<Recipe> getWithCategoryId(String categoryId) {
         Iterable<Recipe> recipes = repository.findWithCategoryId(categoryId);
 
@@ -39,6 +48,17 @@ public class RecipeService {
             .stream(recipes.spliterator(), false)
             .map(this::recipeWithCostAndEnergy)
             .collect(Collectors.toList());
+    }
+
+    public Recipe getRandom() {
+        Iterable<Recipe> repositoryRecipes = repository.findAll();
+        ArrayList<Recipe> recipes = new ArrayList<>();
+        repositoryRecipes.forEach(recipes::add);
+
+        int index = randomGenerator.nextInt(recipes.size());
+        Recipe randomRecipe = recipes.get(index);
+
+        return recipeWithCostAndEnergy(randomRecipe);
     }
 
     public Recipe add(Recipe recipe) {

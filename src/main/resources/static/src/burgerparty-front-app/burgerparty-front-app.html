@@ -327,7 +327,7 @@
           <paper-card class="content-page">
             <h1 class="title">Na co masz dziś ochotę?</h1>
             <h2 class="subtitle">Wybierz i przygotuj coś spośród swoich [[recipes.length]] przepisów!</h2>
-            <paper-button class="primary">losowy przepis</paper-button>
+            <paper-button class="primary" on-click="getRandomRecipe">losowy przepis</paper-button>
           </paper-card>
 
           <!-- Product listing -->
@@ -897,7 +897,7 @@
       },
 
       mapIdToProductUnit(id) {
-        return (this.products.filter(p => p.id === id)[0] | { unit: '' }).unit;
+        return (this.products.filter(p => p.id === id)[0] || { unit: '' }).unit;
       },
 
       selectedRecipeToEditedRecipe() {
@@ -914,6 +914,27 @@
         this.editedRecipe.products.push({ product: '', amount: 0 });
         template.items = this.editedRecipe.products;
         template.render();
+      },
+
+      getRandomRecipe() {
+        fetch('/recipes/random', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        }).then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            return res;
+          } else {
+            const error = new Error(`Nie udało się wylosować przepisu`);
+            error.response = res;
+            throw error;
+          }
+        }).then((res) => res.json())
+        .then((res) => this.selectedRecipe = res)
+        .then(() => this.viewRecipe())
+        .catch((err) => console.error(err));
       }
     });
   </script>

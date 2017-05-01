@@ -23,6 +23,11 @@ public class RecipeController {
         this.service = service;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    public Recipe read(@PathVariable(value = "id") String id) {
+        return service.getById(id);
+    }
+
     @GetMapping(params = { "!categoryId" })
     public Iterable<Recipe> listAll() {
         return service.getAll();
@@ -31,6 +36,11 @@ public class RecipeController {
     @GetMapping(params = { "categoryId" })
     public Iterable<Recipe> listWithCategory(@RequestParam("categoryId") String categoryId) {
         return service.getWithCategoryId(categoryId);
+    }
+
+    @GetMapping(value = "/random")
+    public Recipe readRandom() {
+        return service.getRandom();
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE)

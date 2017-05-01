@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface RecipeRepository extends CrudRepository<Recipe, String> {
 
+    Recipe findById(String id);
+
     @Query("{'category': ?0}")
     List<Recipe> findWithCategoryId(String categoryId);
 }
