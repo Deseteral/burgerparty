@@ -267,6 +267,16 @@
       margin-top: 48px;
     }
 
+    .recipe-view--desc-container {
+      margin-left: 16px;
+    }
+
+    .recipe-view--desc-paragraph {
+      font-size: 17px;
+      margin: 0;
+      line-height: 24px;
+    }
+
     .recipe-editor-header {
       display: flex;
     }
@@ -449,9 +459,11 @@
                   </template>
                 </ul>
                 <h2>Sposób wykonania:</h2>
-                <template is="dom-repeat" items="{{selectedRecipeText}}">
-                  {{item}}<br>
-                </template>
+                <div class="recipe-view--desc-container">
+                  <template is="dom-repeat" items="{{selectedRecipeText}}">
+                    <p class="recipe-view--desc-paragraph">{{item}}</p>
+                  </template>
+                </div>
                 <div class="recipe-view--infos">
                   <div class="list-element-data">
                     <div class="list-element-data-label">kaloryczność</div>
@@ -768,6 +780,8 @@
       },
 
       commitNewCategory() {
+        this.selectedCategory = EMPTY_CATEGORY;
+
         const method = this.selectedCategory.id ? 'PUT' : 'POST';
         const url = this.selectedCategory.id
           ? `/categories/${this.selectedCategory.id}`
@@ -845,7 +859,7 @@
       },
 
       addNewRecipe() {
-        this.selectedRecipe = Object.assign({}, EMPTY_RECIPE);
+        this.editedRecipe = Object.assign({}, EMPTY_RECIPE);
         this.viewRecipeEditor();
       },
 
