@@ -38,7 +38,7 @@ public class ProductController {
     public ResponseEntity create(@Valid @RequestBody Product product) {
         Product createdProduct = service.add(product);
         return created(
-            URI.create("/products" + createdProduct.getId())
+            URI.create("/products/" + createdProduct.getId())
         ).body(createdProduct);
     }
 

@@ -361,6 +361,9 @@
                 {{item.name}}
               </paper-button>
             </template>
+            <paper-button class="category-listing-item" on-click="viewCategoryEditor" raised>
+              dodaj nową kategorię
+            </paper-button>
             <paper-fab class="fab-page-add" icon="add" on-click="addNewRecipe"></paper-fab>
           </div>
 
@@ -446,7 +449,9 @@
                   </template>
                 </ul>
                 <h2>Sposób wykonania:</h2>
-                <div>{{selectedRecipe.description}}</div>
+                <template is="dom-repeat" items="{{selectedRecipeText}}">
+                  {{item}}<br>
+                </template>
                 <div class="recipe-view--infos">
                   <div class="list-element-data">
                     <div class="list-element-data-label">kaloryczność</div>
@@ -525,6 +530,19 @@
               <paper-button class="primary" on-click="commitEditedRecipe">zapisz</paper-button>
             </div>
           </paper-card>
+
+          <!-- Category editor -->
+          <paper-card class="content-page">
+            <div class="content-page-back-button">
+              <paper-icon-button icon="arrow-back" on-click="viewCategoryListing"></paper-icon-button>
+              <h1 class="subtitle">Dodaj nową kategorie</h1>
+            </div>
+            <paper-input label="Nazwa" value="{{selectedCategory.name}}" type="text"></paper-input>
+            <div class="edit-product-button-group">
+              <paper-button on-click="viewCategoryListing">anuluj</paper-button>
+              <paper-button class="primary" on-click="commitNewCategory">zapisz</paper-button>
+            </div>
+          </paper-card>
         </iron-pages>
 
       </app-header-layout>
@@ -552,6 +570,10 @@
       portions: 0
     };
 
+    const EMPTY_CATEGORY = {
+      name: ''
+    };
+
     Polymer({
       is: 'burgerparty-front-app',
 
@@ -564,6 +586,7 @@
         this.selectedCategory = null;
         this.selectedRecipe = EMPTY_RECIPE;
         this.editedRecipe = EMPTY_RECIPE;
+        this.selectedRecipeText = [];
 
         const drawerMenu = this.$['drawer-menu'];
         const appDrawer = this.$['drawer'];
@@ -653,12 +676,18 @@
       },
 
       viewRecipe() {
+        this.selectedRecipeText = this.selectedRecipe.description.split('\n');
         this.menuSelection = 5;
       },
 
       viewRecipeEditor() {
         this.selectedRecipeToEditedRecipe();
         this.menuSelection = 6;
+      },
+
+      viewCategoryEditor() {
+        this.selectedCategory = EMPTY_CATEGORY;
+        this.menuSelection = 7;
       },
 
       commitSelectedProduct() {
@@ -733,6 +762,34 @@
           }
         }).then(() => {
           this.fetchRecipies().then(() => {
+            this.viewCategoryListing();
+          });
+        }).catch((err) => console.error(err));
+      },
+
+      commitNewCategory() {
+        const method = this.selectedCategory.id ? 'PUT' : 'POST';
+        const url = this.selectedCategory.id
+          ? `/categories/${this.selectedCategory.id}`
+          : '/categories';
+
+        fetch(url, {
+          method,
+          body: JSON.stringify(this.selectedCategory),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        }).then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            return res;
+          } else {
+            const error = new Error(`Nie udało się opublikować kategorii`);
+            error.response = res;
+            throw error;
+          }
+        }).then(() => {
+          this.fetchCategories().then(() => {
             this.viewCategoryListing();
           });
         }).catch((err) => console.error(err));
@@ -836,11 +893,11 @@
       },
 
       mapIdToProductName(id) {
-        return this.products.filter(p => p.id === id)[0].name;
+        return (this.products.filter(p => p.id === id)[0] || { name: '' }).name;
       },
 
       mapIdToProductUnit(id) {
-        return this.products.filter(p => p.id === id)[0].unit;
+        return (this.products.filter(p => p.id === id)[0] | { unit: '' }).unit;
       },
 
       selectedRecipeToEditedRecipe() {

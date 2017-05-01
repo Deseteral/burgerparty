@@ -39,6 +39,11 @@ public class Category {
             this.name = category.name;
         }
 
+        public Builder withId(String id) {
+            this.id = id;
+            return this;
+        }
+
         public Category build() {
             return new Category(id, name);
         }

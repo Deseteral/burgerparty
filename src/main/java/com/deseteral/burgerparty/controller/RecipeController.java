@@ -37,7 +37,7 @@ public class RecipeController {
     public ResponseEntity create(@Valid @RequestBody Recipe recipe) {
         Recipe createdRecipe = service.add(recipe);
         return created(
-            URI.create("/recipes" + createdRecipe.getId())
+            URI.create("/recipes/" + createdRecipe.getId())
         ).body(createdRecipe);
     }
 
