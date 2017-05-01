@@ -1,8 +1,7 @@
 package com.deseteral.burgerparty.service;
 
-import com.deseteral.burgerparty.KeyNotFoundException;
+import com.deseteral.burgerparty.web.KeyNotFoundException;
 import com.deseteral.burgerparty.domain.Category;
-import com.deseteral.burgerparty.domain.Product;
 import com.deseteral.burgerparty.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

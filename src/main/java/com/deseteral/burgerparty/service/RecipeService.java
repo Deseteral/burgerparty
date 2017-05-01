@@ -1,6 +1,6 @@
 package com.deseteral.burgerparty.service;
 
-import com.deseteral.burgerparty.KeyNotFoundException;
+import com.deseteral.burgerparty.web.KeyNotFoundException;
 import com.deseteral.burgerparty.domain.Product;
 import com.deseteral.burgerparty.domain.ProductAmount;
 import com.deseteral.burgerparty.domain.Recipe;
@@ -10,7 +10,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -38,7 +37,13 @@ public class RecipeService {
     }
 
     public Recipe getById(String id) {
-        return recipeWithCostAndEnergy(repository.findById(id));
+        Recipe recipe = repository.findById(id);
+
+        if (recipe == null) {
+            throw new KeyNotFoundException("Key not found");
+        }
+
+        return recipeWithCostAndEnergy(recipe);
     }
 
     public Iterable<Recipe> getWithCategoryId(String categoryId) {
