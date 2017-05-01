@@ -8,7 +8,7 @@ public class Product {
     @Id
     private final String id;
     private final String name;
-    private final Integer energy;
+    private final Double energy;
     private final Double price;
     private final String unit;
     private final String imageUrl;
@@ -17,7 +17,7 @@ public class Product {
     Product(
         @JsonProperty("id") String id,
         @JsonProperty("name") String name,
-        @JsonProperty("energy") Integer energy,
+        @JsonProperty("energy") Double energy,
         @JsonProperty("price") Double price,
         @JsonProperty("unit") String unit,
         @JsonProperty("image") String imageUrl
@@ -38,7 +38,7 @@ public class Product {
         return name;
     }
 
-    public Integer getEnergy() {
+    public Double getEnergy() {
         return energy;
     }
 
@@ -61,7 +61,7 @@ public class Product {
     public static final class Builder {
         private String id;
         private String name;
-        private Integer energy;
+        private Double energy;
         private Double price;
         private String unit;
         private String imageUrl;
