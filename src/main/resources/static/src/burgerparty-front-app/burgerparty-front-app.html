@@ -171,12 +171,12 @@
       margin-bottom: 16px;
     }
 
-    .edit-product-image-container iron-image{
+    .edit-product-image-container iron-image {
       width: 128px;
       height: 128px;
     }
 
-    .edit-recipe-image-container iron-image{
+    .edit-recipe-image-container iron-image {
       width: 256px;
       height: 256px;
     }
@@ -220,6 +220,7 @@
       height: 48px;
       margin: 8px;
       background: #fff;
+      color: var(--accent-color);
     }
 
     #product-editor-image-form {
@@ -240,6 +241,11 @@
       display: flex;
       justify-content: center;
       width: 100%;
+    }
+
+    .recipe-view--image {
+      width: 100%;
+      height: 660px;
     }
 
     .recipe-view--product-list {
@@ -428,7 +434,7 @@
               <div class="recipe-view--container">
                 <h1 class="subtitle">{{selectedRecipe.title}}</h1>
                 <div class="recipe-view--image-container">
-                  <iron-image src="{{selectedRecipe.imageUrl}}"></iron-image>
+                  <iron-image class="recipe-view--image" src="{{selectedRecipe.imageUrl}}" sizing="contain"></iron-image>
                 </div>
                 <h2>Składniki:</h2>
                 <ul class="recipe-view--product-list">
@@ -539,7 +545,7 @@
       title: '',
       category: '',
       imageUrl: '',
-      products: [],
+      products: [{ product: '', amount: 0 }],
       description: '',
       timeToPrepare: 0,
       difficulty: 'EASY',
@@ -726,8 +732,8 @@
             throw error;
           }
         }).then(() => {
-          this.fetchProducts().then(() => {
-            this.viewRecipeListing();
+          this.fetchRecipies().then(() => {
+            this.viewCategoryListing();
           });
         }).catch((err) => console.error(err));
       },

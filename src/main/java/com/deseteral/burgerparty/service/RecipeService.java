@@ -1,5 +1,6 @@
 package com.deseteral.burgerparty.service;
 
+import com.deseteral.burgerparty.KeyNotFoundException;
 import com.deseteral.burgerparty.domain.Product;
 import com.deseteral.burgerparty.domain.ProductAmount;
 import com.deseteral.burgerparty.domain.Recipe;
@@ -38,6 +39,22 @@ public class RecipeService {
             .stream(recipes.spliterator(), false)
             .map(this::recipeWithCostAndEnergy)
             .collect(Collectors.toList());
+    }
+
+    public Recipe add(Recipe recipe) {
+        return repository.save(
+            Recipe.builder(recipe).build()
+        );
+    }
+
+    public Recipe update(Recipe recipe) {
+        if (repository.findOne(recipe.getId()) == null) {
+            throw new KeyNotFoundException("Key not found");
+        }
+
+        return repository.save(
+            Recipe.builder(recipe).build()
+        );
     }
 
     private Recipe recipeWithCostAndEnergy(Recipe recipe) {

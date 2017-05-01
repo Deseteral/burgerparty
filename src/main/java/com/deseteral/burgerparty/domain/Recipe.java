@@ -126,6 +126,11 @@ public class Recipe {
             this.energy = recipe.getEnergy();
         }
 
+        public Builder withId(String id) {
+            this.id = id;
+            return this;
+        }
+
         public Builder withCost(Double cost) {
             this.cost = cost;
             return this;
