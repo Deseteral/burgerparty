@@ -288,6 +288,7 @@
 
     .recipe-editor-product {
       display: flex;
+      align-items: center;
     }
 
     .recipe-editor-product-dropdown {
@@ -296,6 +297,10 @@
 
     .recipe-editor-product-amount {
       width: 75px;
+    }
+
+    .recipe-editor-product-remove {
+      color: var(--accent-color);
     }
 
     .recipe-editor-add-product {
@@ -520,6 +525,7 @@
                   </paper-listbox>
                 </paper-dropdown-menu>
                 <paper-input class="recipe-editor-product-amount" label="Ilość" value="{{item.amount}}" type="number"></paper-input>
+                <paper-icon-button class="recipe-editor-product-remove" icon="close" on-click="removeEditorProduct"></paper-icon-button>
               </div>
             </template>
             <paper-button class="recipe-editor-add-product" on-click="recipeEditorAddProduct">Dodaj produkt</paper-button>
@@ -933,6 +939,15 @@
         const template = this.$['edit-recipe-products-template'];
 
         this.editedRecipe.products.push({ product: '', amount: 0 });
+        template.items = this.editedRecipe.products;
+        template.render();
+      },
+
+      removeEditorProduct(ev) {
+        const template = this.$['edit-recipe-products-template'];
+        const index = ev.model.get('index');
+
+        this.editedRecipe.products.splice(index, 1);
         template.items = this.editedRecipe.products;
         template.render();
       },
