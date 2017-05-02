@@ -488,7 +488,7 @@
                 </div>
               </div>
             </div>
-            <paper-fab class="fab-page-add" icon="create" on-click="viewRecipeEditor"></paper-fab>
+            <paper-fab class="fab-page-add" icon="create" on-click="editRecipe"></paper-fab>
           </paper-card>
 
           <!-- Recipe editor -->
@@ -538,7 +538,10 @@
               <paper-input label="Ilość porcji" value="{{editedRecipe.portions}}" type="number"></paper-input>
             </div>
             <div class="edit-product-button-group">
-              <paper-button on-click="viewRecipeListing">anuluj</paper-button>
+              <paper-button on-click="viewCategoryListing">anuluj</paper-button>
+              <template is="dom-if" if="{{editedRecipe.id}}">
+                <paper-button on-click="deleteEditedRecipe">usuń</paper-button>
+              </template>
               <paper-button class="primary" on-click="commitEditedRecipe">zapisz</paper-button>
             </div>
           </paper-card>
@@ -693,8 +696,12 @@
       },
 
       viewRecipeEditor() {
-        this.selectedRecipeToEditedRecipe();
         this.menuSelection = 6;
+      },
+
+      editRecipe() {
+        this.selectedRecipeToEditedRecipe();
+        this.viewRecipeEditor();
       },
 
       viewCategoryEditor() {
@@ -948,6 +955,27 @@
         }).then((res) => res.json())
         .then((res) => this.selectedRecipe = res)
         .then(() => this.viewRecipe())
+        .catch((err) => console.error(err));
+      },
+
+      deleteEditedRecipe() {
+        fetch(`/recipes/${this.editedRecipe.id}`, {
+          method: 'DELETE'
+        }).then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            return res;
+          } else {
+            const error = new Error(`Nie udało się usunąć przepisu`);
+            error.response = res;
+            throw error;
+          }
+        }).then(() => {
+          this.fetchRecipies()
+            .then(() => {
+              this.editedRecipe = EMPTY_RECIPE;
+              this.viewCategoryListing();
+            })
+        })
         .catch((err) => console.error(err));
       }
     });

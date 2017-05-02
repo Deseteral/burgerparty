@@ -3,6 +3,7 @@ package com.deseteral.burgerparty.controller;
 import com.deseteral.burgerparty.domain.Recipe;
 import com.deseteral.burgerparty.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ import java.net.URI;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.accepted;
 import static org.springframework.http.ResponseEntity.created;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 
 @RestController
 @RequestMapping("/recipes")
@@ -61,5 +63,9 @@ public class RecipeController {
         return accepted().body(updatedRecipe);
     }
 
-    // TODO: add delete method
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable(value = "id") String id) {
+        service.delete(id);
+    }
 }

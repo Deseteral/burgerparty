@@ -82,6 +82,10 @@ public class RecipeService {
         );
     }
 
+    public void delete(String id) {
+        repository.delete(id);
+    }
+
     private Recipe recipeWithCostAndEnergy(Recipe recipe) {
         Double cost = calculateTotalProductCost(recipe);
         Integer energy = calculateEnergy(recipe);
