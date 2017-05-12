@@ -681,11 +681,15 @@
       },
 
       viewProductListing() {
-        this.menuSelection = 1;
+        this.fetchProducts().then(() => {
+          this.menuSelection = 1;
+        });
       },
 
       viewCategoryListing() {
-        this.menuSelection = 2;
+        this.fetchCategories().then(() => {
+          this.menuSelection = 2;
+        });
       },
 
       viewProductEditor() {
@@ -693,7 +697,9 @@
       },
 
       viewRecipeListing() {
-        this.menuSelection = 4;
+        this.fetchRecipies().then(() => {
+          this.menuSelection = 4;
+        });
       },
 
       viewRecipe() {
@@ -738,6 +744,7 @@
           }
         }).then(() => {
           this.fetchProducts().then(() => {
+            this.fetchRecipies();
             this.viewProductListing();
           });
         }).catch((err) => console.error(err));
