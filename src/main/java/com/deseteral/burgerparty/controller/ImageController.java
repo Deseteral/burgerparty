@@ -21,7 +21,7 @@ public class ImageController {
         RestTemplate rest = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Client-ID bf9f661dc442de6");
+        headers.set("Authorization", "Client-ID IMGUI_API_KEY");
 
         ResponseEntity<ImgurResponse> response = rest.exchange(
             "https://api.imgur.com/3/image",
